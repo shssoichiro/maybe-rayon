@@ -1,7 +1,7 @@
 #![warn(clippy::all)]
 
 cfg_if::cfg_if! {
-  if #[cfg(all(target_arch="wasm32", not(target_feature = "atomics")))] {
+  if #[cfg(any(not(feature = "threads"), all(target_arch="wasm32", not(target_feature = "atomics"))))] {
     pub struct ThreadPoolBuilder ();
     impl ThreadPoolBuilder {
       pub fn new() -> ThreadPoolBuilder {
