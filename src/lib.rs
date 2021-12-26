@@ -2,11 +2,14 @@
 
 cfg_if::cfg_if! {
   if #[cfg(any(not(feature = "threads"), all(target_arch="wasm32", not(target_feature = "atomics"))))] {
+    #[derive(Default)]
     pub struct ThreadPoolBuilder ();
     impl ThreadPoolBuilder {
       pub fn new() -> ThreadPoolBuilder {
         ThreadPoolBuilder()
       }
+      // FIXME: Use `!` when never type is stabilized
+      #[allow(clippy::result_unit_err)]
       pub fn build(self) -> Result<ThreadPool, ()> {
         Ok(ThreadPool())
       }
