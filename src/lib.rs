@@ -5,12 +5,17 @@ cfg_if::cfg_if! {
     #[derive(Default)]
     pub struct ThreadPoolBuilder ();
     impl ThreadPoolBuilder {
+      #[inline(always)]
       pub fn new() -> ThreadPoolBuilder {
         ThreadPoolBuilder()
       }
+
+      #[inline(always)]
       pub fn build(self) -> Result<ThreadPool, ::core::convert::Infallible> {
         Ok(ThreadPool())
       }
+
+      #[inline(always)]
       pub fn num_threads(self, _num_threads: usize) -> ThreadPoolBuilder {
         ThreadPoolBuilder()
       }
@@ -18,6 +23,7 @@ cfg_if::cfg_if! {
     #[derive(Debug)]
     pub struct ThreadPool ();
     impl ThreadPool {
+      #[inline(always)]
       pub fn install<OP, R>(&self, op: OP) -> R where
             OP: FnOnce() -> R + Send,
                 R: Send, {
@@ -38,6 +44,7 @@ cfg_if::cfg_if! {
         type Item = I::Item;
         type Iter = I::IntoIter;
 
+        #[inline(always)]
         fn into_par_iter(self) -> I::IntoIter {
           self.into_iter()
         }
@@ -57,12 +64,14 @@ cfg_if::cfg_if! {
           type Iter = <&'data mut I as IntoParallelIterator>::Iter;
           type Item = <&'data mut I as IntoParallelIterator>::Item;
 
+          #[inline(always)]
           fn par_iter_mut(&'data mut self) -> Self::Iter {
               self.into_par_iter()
           }
       }
 
       pub trait ParallelIterator: Iterator {
+        #[inline(always)]
         fn flat_map_iter<U, F>(self, f: F) -> std::iter::FlatMap<Self, U, F>
         where
           Self: Sized,
@@ -83,7 +92,7 @@ cfg_if::cfg_if! {
       }
 
       impl<T: Sync> ParallelSlice<T> for [T] {
-        #[inline]
+        #[inline(always)]
         fn par_chunks_exact(
           &self, chunk_size: usize,
         ) -> std::slice::ChunksExact<'_, T> {
@@ -97,6 +106,7 @@ cfg_if::cfg_if! {
       pub use super::slice::*;
     }
 
+    #[inline(always)]
     pub fn join<A, B, RA, RB>(oper_a: A, oper_b: B) -> (RA, RB)
     where
       A: FnOnce() -> RA + Send,
@@ -113,6 +123,7 @@ cfg_if::cfg_if! {
     }
 
     impl<'scope> Scope<'scope> {
+      #[inline(always)]
       pub fn spawn<BODY>(&self, body: BODY)
         where BODY: FnOnce(&Scope<'scope>) + Send + 'scope
       {
@@ -120,10 +131,11 @@ cfg_if::cfg_if! {
       }
     }
 
+    #[inline(always)]
     pub fn scope<'scope, OP, R>(op: OP) -> R
       where OP: for<'s> FnOnce(&'s Scope<'scope>) -> R + 'scope + Send, R: Send,
     {
-      op(&Scope { marker: PhantomData})
+      op(&Scope { marker: PhantomData })
     }
   } else {
     pub use rayon::*;
