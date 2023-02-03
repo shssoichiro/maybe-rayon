@@ -119,6 +119,7 @@ cfg_if::cfg_if! {
     use std::marker::PhantomData;
 
     pub struct Scope<'scope>{
+      #[allow(clippy::type_complexity)]
       marker: PhantomData<Box<dyn FnOnce(&Scope<'scope>) + Send + Sync + 'scope>>,
     }
 
