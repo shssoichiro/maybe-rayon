@@ -8,9 +8,7 @@ cfg_if::cfg_if! {
       pub fn new() -> ThreadPoolBuilder {
         ThreadPoolBuilder()
       }
-      // FIXME: Use `!` when never type is stabilized
-      #[allow(clippy::result_unit_err)]
-      pub fn build(self) -> Result<ThreadPool, ()> {
+      pub fn build(self) -> Result<ThreadPool, ::core::convert::Infallible> {
         Ok(ThreadPool())
       }
       pub fn num_threads(self, _num_threads: usize) -> ThreadPoolBuilder {
